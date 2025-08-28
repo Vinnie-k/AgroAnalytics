@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Kenya-Agor{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-agricultural-green mb-2">
+                            <i class="fas fa-seedling me-2"></i>Join Kenya-Agor
+                        </h2>
+                        <p class="text-muted">Register as a Kenyan farmer to access agricultural insights</p>
+                    </div>
+
+                    <form method="POST" id="registerForm">
+                        <div class="row g-3">
+                            <!-- Basic Information -->
+                            <div class="col-12">
+                                <h5 class="text-agricultural-green border-bottom pb-2 mb-3">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="full_name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="phone_number" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="+254...">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                                <div class="form-text">Choose a unique username for login</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="form-text">Minimum 6 characters</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label">Confirm Password *</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+
+                            <!-- Location Information -->
+                            <div class="col-12 mt-4">
+                                <h5 class="text-agricultural-green border-bottom pb-2 mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Location Details
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="county" class="form-label">County *</label>
+                                <select class="form-select" id="county" name="county" required>
+                                    <option value="">Select County</option>
+                                    {% for county in counties %}
+                                        <option value="{{ county }}">{{ county }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="sub_county" class="form-label">Sub-County</label>
+                                <input type="text" class="form-control" id="sub_county" name="sub_county">
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="ward" class="form-label">Ward</label>
+                                <input type="text" class="form-control" id="ward" name="ward">
+                            </div>
+
+                            <!-- Farm Information -->
+                            <div class="col-12 mt-4">
+                                <h5 class="text-agricultural-green border-bottom pb-2 mb-3">
+                                    <i class="fas fa-tractor me-2"></i>Farm Details
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="farm_size" class="form-label">Farm Size (Acres)</label>
+                                <input type="number" class="form-control" id="farm_size" name="farm_size" min="0" max="1000" step="0.1">
+                                <div class="form-text">Enter 0 if you don't own land</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="farm_type" class="form-label">Farm Type</label>
+                                <select class="form-select" id="farm_type" name="farm_type">
+                                    <option value="">Select Type</option>
+                                    <option value="Smallholder">Smallholder (< 5 acres)</option>
+                                    <option value="Medium-scale">Medium-scale (5-50 acres)</option>
+                                    <option value="Commercial">Commercial (> 50 acres)</option>
+                                    <option value="Cooperative">Cooperative Farm</option>
+                                    <option value="Urban">Urban/Peri-urban</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="farming_experience" class="form-label">Farming Experience (Years)</label>
+                                <input type="number" class="form-control" id="farming_experience" name="farming_experience" min="0" max="100">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Primary Crops *</label>
+                                <div class="form-text mb-2">Select all crops you grow or plan to grow</div>
+                                <div class="row g-2" id="crops-container">
+                                    {% for crop in crops %}
+                                        <div class="col-6 col-lg-4">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       id="crop_{{ loop.index }}" 
+                                                       name="primary_crops" 
+                                                       value="{{ crop }}">
+                                                <label class="form-check-label small" for="crop_{{ loop.index }}">
+                                                    {{ crop }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Terms and Submit -->
+                            <div class="col-12 mt-4">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the <a href="./terms.html" class="text-agricultural-green">Terms of Service</a> 
+                                        and <a href="./privacy.html" class="text-agricultural-green">Privacy Policy</a> *
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" id="data_sharing">
+                                    <label class="form-check-label" for="data_sharing">
+                                        I consent to sharing anonymized farm data for agricultural research 
+                                        and policy development in Kenya
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-agricultural-green btn-lg w-100 mb-3">
+                                    <i class="fas fa-user-plus me-2"></i>Register as Farmer
+                                </button>
+                                
+                                <div class="text-center">
+                                    <span class="text-muted">Already have an account?</span>
+                                    <a href="{{ url_for('login') }}" class="text-agricultural-green text-decoration-none fw-bold ms-1">
+                                        Login here
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registration Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+                <h4 class="fw-bold mb-2">Registration Successful!</h4>
+                <p class="text-muted mb-4">
+                    Welcome to Kenya-Agor! Your farmer account has been created successfully.
+                </p>
+                <a href="{{ url_for('login') }}" class="btn btn-agricultural-green">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    // Password confirmation validation
+    confirmPassword.addEventListener('input', function() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    });
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        const selectedCrops = document.querySelectorAll('input[name="primary_crops"]:checked');
+        
+        if (selectedCrops.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one crop you grow or plan to grow.');
+            return;
+        }
+        
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('Passwords do not match. Please check and try again.');
+            return;
+        }
+        
+        if (password.value.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters long.');
+            return;
+        }
+    });
+    
+    // Enhanced phone number formatting
+    const phoneInput = document.getElementById('phone_number');
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.startsWith('0')) {
+            value = '254' + value.substring(1);
+        }
+        if (value.startsWith('254')) {
+            this.value = '+' + value;
+        }
+    });
+    
+    // County selection enhancement
+    const countySelect = document.getElementById('county');
+    countySelect.addEventListener('change', function() {
+        const subCountyInput = document.getElementById('sub_county');
+        const wardInput = document.getElementById('ward');
+        
+        // Clear sub-county and ward when county changes
+        subCountyInput.value = '';
+        wardInput.value = '';
+        
+        // Enable/disable sub-county input based on county selection
+        if (this.value) {
+            subCountyInput.disabled = false;
+            wardInput.disabled = false;
+        } else {
+            subCountyInput.disabled = true;
+            wardInput.disabled = true;
+        }
+    });
+    
+    // Farm size validation
+    const farmSizeInput = document.getElementById('farm_size');
+    const farmTypeSelect = document.getElementById('farm_type');
+    
+    farmSizeInput.addEventListener('change', function() {
+        const size = parseFloat(this.value);
+        if (!isNaN(size)) {
+            // Auto-suggest farm type based on size
+            if (size < 5) {
+                farmTypeSelect.value = 'Smallholder';
+            } else if (size >= 5 && size <= 50) {
+                farmTypeSelect.value = 'Medium-scale';
+            } else if (size > 50) {
+                farmTypeSelect.value = 'Commercial';
+            }
+        }
+    });
+    
+    // Add visual feedback for form sections
+    const sections = document.querySelectorAll('h5.text-agricultural-green');
+    sections.forEach(section => {
+        section.style.cursor = 'pointer';
+        section.addEventListener('click', function() {
+            const nextElement = this.nextElementSibling;
+            if (nextElement) {
+                nextElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

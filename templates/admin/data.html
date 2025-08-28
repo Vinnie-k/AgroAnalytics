@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Data Management - Kenya-Agor Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-agricultural-green mb-2">
+                        <i class="fas fa-database me-2"></i>Agricultural Data Management
+                    </h1>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Admin
+                    </a>
+                    <button class="btn btn-agricultural-green" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h4 class="text-primary">{{ data_records.total }}</h4>
+                            <p class="text-muted mb-0">Total Records</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-success">
+                                {{ data_records.items | selectattr('data_source', 'equalto', 'KilimoSTAT') | list | length }}
+                            </h4>
+                            <p class="text-muted mb-0">KilimoSTAT</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-info">
+                                {{ data_records.items | selectattr('data_source', 'equalto', 'KNBS') | list | length }}
+                            </h4>
+                            <p class="text-muted mb-0">KNBS</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-warning">
+                                {{ data_records.items | map(attribute='county') | unique | list | length }}
+                            </h4>
+                            <p class="text-muted mb-0">Counties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Agricultural Data Records</h5>
+                </div>
+                <div class="card-body">
+                    {% if data_records.items %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Source</th>
+                                        <th>Type</th>
+                                        <th>Crop</th>
+                                        <th>County</th>
+                                        <th>Season</th>
+                                        <th>Year</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in data_records.items %}
+                                    <tr>
+                                        <td>{{ record.id }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if record.data_source == 'KilimoSTAT' %}success{% else %}info{% endif %}">
+                                                {{ record.data_source }}
+                                            </span>
+                                        </td>
+                                        <td>{{ record.data_type or 'N/A' }}</td>
+                                        <td>{{ record.crop_name or 'N/A' }}</td>
+                                        <td>{{ record.county or 'N/A' }}</td>
+                                        <td>{{ record.season or 'N/A' }}</td>
+                                        <td>{{ record.year or 'N/A' }}</td>
+                                        <td>{{ record.value or 'N/A' }}</td>
+                                        <td>{{ record.unit or 'N/A' }}</td>
+                                        <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') if record.created_at else 'N/A' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if data_records.pages > 1 %}
+                        <nav aria-label="Data pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if data_records.has_prev %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_data', page=data_records.prev_num) }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for page_num in data_records.iter_pages() %}
+                                    {% if page_num %}
+                                        {% if page_num != data_records.page %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('admin_data', page=page_num) }}">{{ page_num }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page_num }}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if data_records.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_data', page=data_records.next_num) }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No data records found</h5>
+                            <p class="text-muted">Click "Refresh Data" to fetch latest agricultural data</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshData() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    btn.disabled = true;
+    
+    fetch('/api/update-data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Data refreshed successfully! ' + data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert('Error refreshing data: ' + error);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+}
+</script>
+{% endblock %}

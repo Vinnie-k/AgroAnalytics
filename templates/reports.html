@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Kenya-Agor{% endblock %}
+
+{% block head %}
+<style>
+    .report-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-left: 4px solid var(--agricultural-green);
+    }
+    .report-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .report-content {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .insight-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-agricultural-green mb-2">
+                        <i class="fas fa-file-alt me-2"></i>Agricultural Reports
+                    </h1>
+                    <p class="text-muted mb-0">
+                        AI-generated insights and analysis for your farming operations
+                    </p>
+                </div>
+                <div>
+                    <button class="btn btn-agricultural-green" onclick="generateNewReport()">
+                        <i class="fas fa-plus me-2"></i>Generate New Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if reports %}
+        <!-- Reports Grid -->
+        <div class="row g-4">
+            {% for report in reports %}
+                <div class="col-lg-6">
+                    <div class="card report-card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title mb-1">{{ report.title }}</h5>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-agricultural-green-subtle text-agricultural-green me-2">
+                                        {{ report.report_type.replace('_', ' ').title() }}
+                                    </span>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ report.created_at.strftime('%B %d, %Y') }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="viewFullReport('{{ report.id }}')">
+                                            <i class="fas fa-eye me-2"></i>View Full Report
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="downloadReport('{{ report.id }}')">
+                                            <i class="fas fa-download me-2"></i>Download PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="shareReport('{{ report.id }}')">
+                                            <i class="fas fa-share me-2"></i>Share Report
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <!-- Report Summary -->
+                            <div class="report-content mb-3">
+                                <div class="mb-3">
+                                    <h6 class="text-agricultural-green mb-2">
+                                        <i class="fas fa-chart-line me-1"></i>Executive Summary
+                                    </h6>
+                                    <p class="text-muted small">
+                                        {{ report.content[:200] }}{% if report.content|length > 200 %}...{% endif %}
+                                    </p>
+                                </div>
+                                
+                                {% if report.insights %}
+                                    <!-- Key Insights -->
+                                    <div class="mb-3">
+                                        <h6 class="text-agricultural-green mb-2">
+                                            <i class="fas fa-lightbulb me-1"></i>Key Insights
+                                        </h6>
+                                        
+                                        {% if report.insights.crop_recommendations %}
+                                            <div class="mb-2">
+                                                <span class="fw-bold small">Top Recommendations:</span>
+                                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                                    {% for rec in report.insights.crop_recommendations[:3] %}
+                                                        <span class="badge bg-success-subtle text-success insight-badge">
+                                                            {{ rec.crop }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if report.insights.productivity_tips %}
+                                            <div class="mb-2">
+                                                <span class="fw-bold small">Tips Available:</span>
+                                                <span class="badge bg-info-subtle text-info insight-badge ms-1">
+                                                    {{ report.insights.productivity_tips|length }} Tips
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-agricultural-green flex-fill" 
+                                        onclick="viewFullReport('{{ report.id }}')">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </button>
+                                <button class="btn btn-sm btn-outline-agricultural-green" 
+                                        onclick="downloadReport('{{ report.id }}')">
+                                    <i class="fas fa-download me-1"></i>Export
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-light text-center">
+                            <small class="text-muted">
+                                Generated by Kenya-Agor AI • 
+                                <span class="text-agricultural-green">{{ (report.content.split()|length / 200)|round|int }} min read</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination (if needed) -->
+        {% if reports|length >= 10 %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-file-alt fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted mb-3">No Reports Generated Yet</h3>
+                        <p class="text-muted mb-4 lead">
+                            Generate your first agricultural report to get AI-powered insights 
+                            about your farming operations, crop recommendations, and market analysis.
+                        </p>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="card border bg-light">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-chart-bar text-agricultural-green fa-2x mb-2"></i>
+                                        <h6 class="mb-0">Production Analysis</h6>
+                                        <small class="text-muted">Crop yield insights</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border bg-light">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-lightbulb text-agricultural-green fa-2x mb-2"></i>
+                                        <h6 class="mb-0">Recommendations</h6>
+                                        <small class="text-muted">AI-powered tips</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border bg-light">
+                                    <div class="card-body text-center py-3">
+                                        <i class="fas fa-money-bill-wave text-agricultural-green fa-2x mb-2"></i>
+                                        <h6 class="mb-0">Market Analysis</h6>
+                                        <small class="text-muted">Price trends</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-agricultural-green btn-lg" onclick="generateNewReport()">
+                            <i class="fas fa-plus me-2"></i>Generate Your First Report
+                        </button>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                Reports are generated using data from KilimoSTAT and KNBS
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Report Details Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt me-2 text-agricultural-green"></i>
+                    Agricultural Report Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="reportModalBody">
+                <!-- Report content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-agricultural-green" onclick="downloadCurrentReport()">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-agricultural-green mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h6 class="mb-2">Generating Report...</h6>
+                <small class="text-muted">Analyzing your agricultural data</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentReportId = null;
+
+function generateNewReport() {
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // In a real implementation, this would make an API call to generate a new report
+    // For now, we'll simulate the process and refresh the page
+    setTimeout(() => {
+        loadingModal.hide();
+        showAlert('success', 'New report generated successfully! Refreshing page...');
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }, 3000);
+}
+
+function viewFullReport(reportId) {
+    currentReportId = reportId;
+    
+    // In a real implementation, this would fetch the full report data from an API
+    // For now, we'll show a placeholder
+    const modalBody = document.getElementById('reportModalBody');
+    modalBody.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <div class="mb-4">
+                    <h4 class="text-agricultural-green">Agricultural Analysis Report</h4>
+                    <p class="text-muted">Comprehensive analysis for your farming operations</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Farm Profile Summary</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-map-marker-alt me-2"></i>Location</h6>
+                                    <p class="mb-0">{{ current_user.county }} County</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-seedling me-2"></i>Primary Crops</h6>
+                                    <p class="mb-0">Maize, Beans, Tea</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Key Recommendations</h5>
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-lightbulb me-2"></i>Top Recommendation</h6>
+                        <p class="mb-0">Consider diversifying with drought-resistant crops like sorghum for better resilience.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Market Analysis</h5>
+                    <p>Current market conditions show favorable prices for your primary crops. Tea prices have increased by 15% compared to last season.</p>
+                </div>
+                
+                <div class="alert alert-info">
+                    <small><strong>Note:</strong> This report is based on the latest available data from KilimoSTAT and KNBS. Market conditions may change rapidly.</small>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+    modal.show();
+}
+
+function downloadReport(reportId) {
+    // Simulate PDF download
+    showAlert('info', 'Preparing PDF download...');
+    
+    setTimeout(() => {
+        // Create a dummy PDF download
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,JVBERi0xLjQKJdPr6eEKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4KZW5kb2JqCg==';
+        link.download = `agricultural-report-${reportId}.pdf`;
+        link.click();
+        
+        showAlert('success', 'Report downloaded successfully!');
+    }, 1500);
+}
+
+function shareReport(reportId) {
+    // Simple share functionality using Web Share API if available
+    if (navigator.share) {
+        navigator.share({
+            title: 'Kenya-Agor Agricultural Report',
+            text: 'Check out my agricultural analysis report from Kenya-Agor',
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy link to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showAlert('success', 'Report link copied to clipboard!');
+        });
+    }
+}
+
+function downloadCurrentReport() {
+    if (currentReportId) {
+        downloadReport(currentReportId);
+    }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '100px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.minWidth = '300px';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

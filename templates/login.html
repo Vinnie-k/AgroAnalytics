@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}Login - <Kenya-Agro></Kenya-Agro>{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-seedling text-agricultural-green fa-3x mb-3"></i>
+                        <h2 class="fw-bold text-agricultural-green mb-2">Welcome Back</h2>
+                        <p class="text-muted">Sign in to access your agricultural dashboard</p>
+                    </div>
+
+                    <form method="POST" id="loginForm">
+                        <div class="mb-3">
+                            <label for="username_or_email" class="form-label">Username or Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="username_or_email" 
+                                       name="username_or_email" 
+                                       placeholder="Enter username or email"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter password"
+                                       required>
+                                <button type="button" 
+                                        class="btn btn-outline-secondary" 
+                                        id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
+                                        <label class="form-check-label small" for="remember_me">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <a href="#" class="text-agricultural-green text-decoration-none small">
+                                        Forgot password?
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-agricultural-green btn-lg w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+
+                        <div class="text-center">
+                            <span class="text-muted">New to Kenya-Agor?</span>
+                            <a href="{{ url_for('register') }}" class="text-agricultural-green text-decoration-none fw-bold ms-1">
+                                Create Account
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Divider -->
+                    <div class="divider my-4">
+                        <span class="text-muted">or</span>
+                    </div>
+
+                    <!-- Demo Login Section -->
+                    <div class="text-center">
+                        <p class="text-muted small mb-2">Quick Demo Access:</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button type="button" 
+                                        class="btn btn-outline-agricultural-green btn-sm w-100" 
+                                        onclick="fillDemoCredentials('demo_farmer', 'demo123')">
+                                    <i class="fas fa-user me-1"></i>Demo Farmer
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" 
+                                        class="btn btn-outline-agricultural-green btn-sm w-100" 
+                                        onclick="fillDemoCredentials('test@farmer.ke', 'test123')">
+                                    <i class="fas fa-envelope me-1"></i>Test Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Footer -->
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>Secure login protected by encryption
+                    </small>
+                </div>
+            </div>
+
+            <!-- Benefits Cards -->
+            <div class="row g-3 mt-4">
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body p-2">
+                            <i class="fas fa-chart-line text-agricultural-green fa-2x mb-2"></i>
+                            <small class="fw-bold d-block">Data Insights</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body p-2">
+                            <i class="fas fa-robot text-agricultural-green fa-2x mb-2"></i>
+                            <small class=" fw-bold d-block">AI Assistant</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body p-2">
+                            <i class="fas fa-file-alt text-agricultural-green fa-2x mb-2"></i>
+                            <small class=" fw-bold d-block">Smart Reports</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Image -->
+        <div class="col-lg-7 d-none d-lg-block">
+            <div class="position-relative">
+                <img src="{{ url_for('static', filename='IMAGES/Tea.jpg') }}"
+                     alt="Kenyan agriculture" 
+                     class="img-fluid rounded-4 shadow-lg w-100" 
+                     style="height: 600px; object-fit: cover;">
+                
+                <!-- Overlay Content -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center rounded-4" style="background: rgba(76, 175, 80, 0.8);">
+                    <div class="text-center text-white p-4">
+                        <h3 class="fw-bold mb-3">
+                            <i class="fas fa-seedling me-2"></i>Kenya-Agor Platform
+                        </h3>
+                        <p class="mb-4 fs-5">
+                            Empowering Kenyan farmers with data-driven agricultural insights
+                        </p>
+                        
+                        <!-- Key Features -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <small>Real-time Data</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <small>ML Analytics</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <small>Market Insights</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <small>AI Chatbot</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    const usernameInput = document.getElementById('username_or_email');
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle icon
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        if (!username) {
+            e.preventDefault();
+            showError('Please enter your username or email');
+            usernameInput.focus();
+            return;
+        }
+        
+        if (!password) {
+            e.preventDefault();
+            showError('Please enter your password');
+            passwordInput.focus();
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing In...';
+        submitBtn.disabled = true;
+        
+        // Re-enable button after 3 seconds (in case of server error)
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 3000);
+    });
+
+    // Input validation feedback
+    [usernameInput, passwordInput].forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            const feedback = this.parentNode.parentNode.querySelector('.invalid-feedback');
+            if (feedback) feedback.remove();
+        });
+    });
+
+    // Auto-focus on username field
+    usernameInput.focus();
+
+    // Remember me functionality
+    const rememberMe = document.getElementById('remember_me');
+    const savedUsername = localStorage.getItem('kenya_agor_username');
+    
+    if (savedUsername) {
+        usernameInput.value = savedUsername;
+        rememberMe.checked = true;
+        passwordInput.focus();
+    }
+
+    form.addEventListener('submit', function() {
+        if (rememberMe.checked) {
+            localStorage.setItem('kenya_agor_username', usernameInput.value);
+        } else {
+            localStorage.removeItem('kenya_agor_username');
+        }
+    });
+});
+
+// Demo credentials function
+function fillDemoCredentials(username, password) {
+    document.getElementById('username_or_email').value = username;
+    document.getElementById('password').value = password;
+    
+    // Add visual feedback
+    const demoAlert = document.createElement('div');
+    demoAlert.className = 'alert alert-info alert-dismissible fade show mt-3';
+    demoAlert.innerHTML = `
+        <i class="fas fa-info-circle me-2"></i>
+        Demo credentials filled. Click "Sign In" to access the dashboard.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const form = document.getElementById('loginForm');
+    form.appendChild(demoAlert);
+    
+    // Auto-remove alert after 5 seconds
+    setTimeout(() => {
+        if (demoAlert.parentNode) {
+            demoAlert.remove();
+        }
+    }, 5000);
+}
+
+// Show error message function
+function showError(message) {
+    // Remove existing error alerts
+    const existingAlerts = document.querySelectorAll('.alert-danger');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    // Create new error alert
+    const errorAlert = document.createElement('div');
+    errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+    errorAlert.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at the top of the form
+    const form = document.getElementById('loginForm');
+    form.insertBefore(errorAlert, form.firstChild);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (errorAlert.parentNode) {
+            errorAlert.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.divider {
+    position: relative;
+    text-align: center;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    position: relative;
+}
+</style>
+{% endblock %}

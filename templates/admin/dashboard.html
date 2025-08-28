@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Kenya-Agor{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 text-agricultural-green mb-2">
+                <i class="fas fa-shield-alt me-2"></i>Admin Dashboard
+            </h1>
+            <p class=>System overview and management</p>
+        </div>
+    </div>
+
+    <!-- Key Statistics -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 ">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title  mb-0">Total Users</h6>
+                            <h4 class="fw-bold mb-0">{{ stats.total_users }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-database fa-2x text-success"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title  mb-0">Data Records</h6>
+                            <h4 class="fw-bold mb-0">{{ stats.total_data_records }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-file-alt fa-2x text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title mb-0">Reports</h6>
+                            <h4 class="fw-bold mb-0">{{ stats.total_reports }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-comments fa-2x text-info"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title mb-0">Chat Messages</h6>
+                            <h4 class="fw-bold mb-0">{{ stats.total_chat_messages }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Links -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class=" text-agricultural-green mb-0"><i class="fas fa-users me-2"></i>User Management</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Manage user accounts, permissions, and view user statistics.</p>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-primary">
+                        <i class="fas fa-cog me-2"></i>Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-agricultural-green mb-0"><i class="fas fa-database me-2"></i>Data Management</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">View and manage agricultural data from KilimoSTAT and KNBS.</p>
+                    <a href="{{ url_for('admin_data') }}" class="btn btn-success">
+                        <i class="fas fa-table me-2"></i>View Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class=" text-agricultural-green mb-0"><i class="fas fa-user-clock me-2"></i>Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.recent_users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>County</th>
+                                        <th>Farm Size</th>
+                                        <th>Registered</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in stats.recent_users %}
+                                    <tr>
+                                        <td>{{ user.full_name }}</td>
+                                        <td>{{ user.county }}</td>
+                                        <td>{{ user.farm_size or 'N/A' }} acres</td>
+                                        <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class=>No users registered yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

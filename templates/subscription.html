@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Plans - Kenya-Agor{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="h2 text-agricultural-green mb-3">
+                <i class="fas fa-star me-2"></i>Choose Your Plan
+            </h1>
+            <p class="lead text-muted">Unlock advanced features to maximize your farming potential</p>
+        </div>
+    </div>
+
+    <!-- Current Status -->
+    {% if current_user.subscription_status == 'active' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                You currently have an active {{ current_user.subscription_plan.title() }} subscription.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pricing Cards -->
+    <div class="row g-4 justify-content-center">
+        {% for plan_key, plan in plans.items() %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow {% if plan_key == 'premium' %}border-agricultural-green shadow-lg{% endif %}">
+                {% if plan_key == 'premium' %}
+                <div class="card-header bg-agricultural-green text-white text-center">
+                    <span class="badge bg-white text-agricultural-green">Most Popular</span>
+                </div>
+                {% endif %}
+                
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title h4 mb-3">{{ plan.name }}</h3>
+                    <div class="mb-4">
+    <div class="mb-4">
+       {% if plan.price == 0 %}
+           <span class="h2 text-agricultural-green">Free</span>
+       {% else %}
+           <span class="h2 text-agricultural-green">KES {{ "{:,}".format(plan.price) }}</span>
+       {% endif %}
+           <span class="text-muted">/month</span>
+    </div>                        
+    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        {% for feature in plan.features %}
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>{{ feature }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 p-4">
+                    {% if plan_key == 'basic' %}
+                    <button class="btn btn-agricultural-green w-100" onclick="subscribeToPlan('{{ plan_key }}')">
+                        <i class="fas fa-play-circle me-2"></i>Get Started
+                    </button>
+                    {% else %}
+                    <button class="btn {% if plan_key == 'premium' %}btn-agricultural-green{% else %}btn-outline-agricultural-green{% endif %} w-100" 
+                        onclick="subscribeToPlan('{{ plan_key }}')">
+                       <i class="fas fa-credit-card me-2"></i>Subscribe Now
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Features Comparison -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Feature Comparison</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th class="text-center">Basic</th>
+                                    <th class="text-center">Premium</th>
+                                    <th class="text-center">Enterprise</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Agricultural Data Access</td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>AI Chatbot Support</td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Market Insights</td>
+                                    <td class="text-center">Basic</td>
+                                    <td class="text-center">Advanced</td>
+                                    <td class="text-center">Advanced</td>
+                                </tr>
+                                <tr>
+                                    <td>Weather Predictions</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Export Data</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>API Access</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Priority Support</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Frequently Asked Questions</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Can I cancel my subscription anytime?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, you can cancel your subscription at any time. You'll continue to have access until the end of your billing period.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            What payment methods do you accept?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We accept all major credit cards, debit cards, and mobile money payments through our secure payment processor.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function subscribeToPlan(planType) {
+    if (confirm(`Are you sure you want to subscribe to the ${planType} plan?`)) {
+        // Show loading state
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        btn.disabled = true;
+        
+        fetch('/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                plan_type: planType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.checkout_url) {
+                window.location.href = data.checkout_url;
+            } else {
+                alert('Error: ' + (data.error || 'Failed to create checkout session'));
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+}
+</script>
+{% endblock %}
